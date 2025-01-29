@@ -1,3 +1,4 @@
+// Create separate file for types?
 // Types
 type WarPlayer = {
     name: string;
@@ -15,6 +16,7 @@ type WarDeck = {
     total: number;
 }
 
+// Create separate file for classes?
 // Classes
 class Player implements WarPlayer {
     name: string;
@@ -60,6 +62,8 @@ class Deck implements WarDeck {
 document.querySelector(".start-game")?.addEventListener("click", () => {
     startGame();
 });
+
+// TODO: create event listener for a draw button that calls a function to play one round of the game
 
 // Game
 function startGame(): void {
@@ -122,3 +126,11 @@ function fillMainDeck(): WarCard[] {
 
     return deck;
 }
+
+// TODO: Create function that plays a single round of the game
+
+// TODO: Create function to update card total display
+
+// TODO: Create function to update played card displays for player and computer
+
+// TODO: Create function to add last played round result to the history log
