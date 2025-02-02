@@ -4,6 +4,9 @@ import { WarCard } from "./types.js";
 // Event Listener
 document.querySelector(".start-game")?.addEventListener("click", () => {
     startGame();
+    const startBtn = document.querySelector(".start-game");
+    if (startBtn) startBtn.classList.toggle("hide");    
+    
 });
 
 // TODO: create event listener for a draw button that calls a function to play one round of the game
@@ -15,10 +18,21 @@ function startGame(): void {
     const playerDeck = new Deck([]);
     const computerDeck = new Deck([]);
     const playerName: string = getPlayerName();
-    const player = new Player(playerName, playerDeck);
-    const computer = new Player("Computer", computerDeck);
+    // If player hits cancel, exit function
+    // The player can hit start again to play
+    if (!playerName){
+        
+        return;
+    }
+    const player: Player = new Player(playerName, playerDeck);
+    const computer: Player = new Player("Computer", computerDeck);
 
-    const game = new Game(player, computer, mainDeck);
+    const playerHeading = document.querySelector(".player h2");
+    if (playerHeading) playerHeading.textContent = player.name;
+    const computerHeading = document.querySelector(".computer h2");
+    if (computerHeading) computerHeading.textContent = computer.name;
+
+    const game: Game = new Game(player, computer, mainDeck);
 
     // Shuffle deck
     mainDeck.shuffle();
@@ -32,11 +46,7 @@ function startGame(): void {
 }
 
 function getPlayerName(): string {
-    let response = prompt("What is your name?", "");
-    if (!response) {
-        response = "Player";
-    }
-    return response;
+    return prompt("What is your name?", "") || "";
 }
 
 function fillMainDeck(): WarCard[] {

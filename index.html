@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="stylesheet" href="/src/css/styles.css">
 </head>
 <body>
     <!-- TODO: show message when a war happens -->
@@ -15,6 +16,19 @@
     <!-- TODO: add display to show total number of cards for each player -->
     <!-- TODO: history of play? -->
     <button class="start-game" type="button">Start</button>
+    <div class="game-display">
+        <!-- TODO: create card images? -->
+        <div class="player">
+            <h2></h2>
+            <p class="card"></p>
+            <p class="total"></p>
+        </div>
+        <div class="computer">
+            <h2></h2>
+            <p class="card"></p>
+            <p class="total"></p>
+        </div>
+    </div>
     <script type="module" src="dist/war.js"></script>
 </body>
 </html>
