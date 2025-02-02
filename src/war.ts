@@ -1,5 +1,12 @@
 // Create separate file for types?
 // Types
+type WarGame = {
+    player: WarPlayer;
+    computer: WarPlayer;
+    mainDeck: WarDeck;
+    deal: () => void;
+}
+
 type WarPlayer = {
     name: string;
     deck: WarDeck;
@@ -14,10 +21,33 @@ type WarCard = {
 type WarDeck = {
     cards: WarCard[];
     total: number;
+    addCards: (...cards) => void;
 }
 
 // Create separate file for classes?
 // Classes
+class Game implements WarGame {
+    player: WarPlayer;
+    computer: WarPlayer;
+    mainDeck: WarDeck;
+
+    constructor(player: WarPlayer, computer: WarPlayer, mainDeck: WarDeck) {
+        this.player = player;
+        this.computer = computer;
+        this.mainDeck = mainDeck;
+    }
+
+    deal(): void {
+        for (let i = 0; i < this.mainDeck.total; i++) {
+            if (i % 2 === 0) {
+                this.player.deck.addCards(this.mainDeck.cards[i]);
+            } else {
+                this.computer.deck.addCards(this.mainDeck.cards[i]);
+            }
+        }
+    }
+}
+
 class Player implements WarPlayer {
     name: string;
     deck: WarDeck;
@@ -53,9 +83,25 @@ class Deck implements WarDeck {
         this.total = cards.length;
     }
 
+    shuffle(): void {
+        let cardTotal = this.cards.length;
+        let temp;
+        let index;
+        while(cardTotal) {
+            index = Math.floor(Math.random() * cardTotal--);
+            temp = this.cards[cardTotal];
+            this.cards[cardTotal] = this.cards[index];
+            this.cards[index] = temp;
+        }
+    }
+
     // Pull card from top of deck
 
     // Add won cards to bottom of deck
+    addCards(...cards: WarCard[]): void {
+        const newTotal = this.cards.push(...cards)
+        this.total = newTotal;
+    }
 }
 
 // Event Listener
@@ -67,20 +113,24 @@ document.querySelector(".start-game")?.addEventListener("click", () => {
 
 // Game
 function startGame(): void {
-    // Function to fill main deck
+    // Function to add cards to main deck
     const mainDeck = new Deck(fillMainDeck());
-    // Shuffle deck
-
-    // Deal half the cards to each player
-
     const playerDeck = new Deck([]);
     const computerDeck = new Deck([]);
     const playerName: string = getPlayerName();
     const player = new Player(playerName, playerDeck);
     const computer = new Player("Computer", computerDeck);
 
-    console.log(player.name);
-    console.log(computer.name);
+    const game = new Game(player, computer, mainDeck);
+
+    // Shuffle deck
+    mainDeck.shuffle();
+
+    // Deal half the cards to each player
+    game.deal();
+
+    console.log(player.deck);
+    console.log(computer.deck);
     console.log(mainDeck);
 }
 
