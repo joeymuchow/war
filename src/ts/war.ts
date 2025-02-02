@@ -3,27 +3,28 @@ import { WarCard } from "./types.js";
 
 // Event Listener
 document.querySelector(".start-game")?.addEventListener("click", () => {
-    startGame();
-    const startBtn = document.querySelector(".start-game");
-    if (startBtn) startBtn.classList.toggle("hide");    
-    
-});
-
-// TODO: create event listener for a draw button that calls a function to play one round of the game
-
-// Game
-function startGame(): void {
-    // Function to add cards to main deck
-    const mainDeck = new Deck(fillMainDeck());
-    const playerDeck = new Deck([]);
-    const computerDeck = new Deck([]);
     const playerName: string = getPlayerName();
     // If player hits cancel, exit function
     // The player can hit start again to play
     if (!playerName){
-        
         return;
     }
+    startGame(playerName);
+    const startBtn = document.querySelector(".start-game");
+    if (startBtn) startBtn.classList.toggle("hide");
+});
+
+// TODO: create event listener for a draw button that calls a function to play one round of the game
+document.querySelector(".draw")?.addEventListener("click", () => {
+    // Call function that draws cards from both players
+});
+
+// Game
+function startGame(playerName: string): void {
+    // Function to add cards to main deck
+    const mainDeck = new Deck(fillMainDeck());
+    const playerDeck = new Deck([]);
+    const computerDeck = new Deck([]);
     const player: Player = new Player(playerName, playerDeck);
     const computer: Player = new Player("Computer", computerDeck);
 
