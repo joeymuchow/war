@@ -1,6 +1,5 @@
-import { WarCard } from "./types";
-import { Game, Player, Deck, Card } from "./classes";
-
+import { Game, Player, Deck, Card } from "./classes.js";
+import { WarCard } from "./types.js";
 
 // Event Listener
 document.querySelector(".start-game")?.addEventListener("click", () => {

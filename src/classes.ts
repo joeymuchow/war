@@ -1,4 +1,4 @@
-import { WarGame, WarPlayer, WarDeck, WarCard } from "./types";
+import { WarGame, WarPlayer, WarDeck, WarCard } from "./types.js";
 
 // Classes
 export class Game implements WarGame {
