@@ -20,5 +20,7 @@ export type WarCard = {
 export type WarDeck = {
     cards: WarCard[];
     total: number;
+    shuffle(): void;
+    drawCard(): WarCard;
     addCards: (...cards) => void;
 }

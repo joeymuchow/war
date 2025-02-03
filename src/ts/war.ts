@@ -1,5 +1,6 @@
 import { Game, Player, Deck, Card } from "./classes.js";
-import { WarCard } from "./types.js";
+// import Game from "./classes.js";
+import { WarGame, WarPlayer, WarDeck, WarCard } from "./types.js";
 
 // Event Listener
 document.querySelector(".start-game")?.addEventListener("click", () => {
@@ -12,34 +13,38 @@ document.querySelector(".start-game")?.addEventListener("click", () => {
     startGame(playerName);
     const startBtn = document.querySelector(".start-game");
     if (startBtn) startBtn.classList.toggle("hide");
+    const drawBtn = document.querySelector(".draw");
+    if (drawBtn) drawBtn.classList.toggle("hide");
 });
 
-// TODO: create event listener for a draw button that calls a function to play one round of the game
 document.querySelector(".draw")?.addEventListener("click", () => {
-    // Call function that draws cards from both players
+    playRound([]);
 });
 
 // Game
 function startGame(playerName: string): void {
     // Function to add cards to main deck
-    const mainDeck = new Deck(fillMainDeck());
-    const playerDeck = new Deck([]);
-    const computerDeck = new Deck([]);
-    const player: Player = new Player(playerName, playerDeck);
-    const computer: Player = new Player("Computer", computerDeck);
+    const mainDeck: WarDeck = new Deck(fillMainDeck());
+    const playerDeck: WarDeck = new Deck([]);
+    const computerDeck: WarDeck = new Deck([]);
+    const player: WarPlayer = new Player(playerName, playerDeck);
+    const computer: WarPlayer = new Player("Computer", computerDeck);
 
     const playerHeading = document.querySelector(".player h2");
     if (playerHeading) playerHeading.textContent = player.name;
     const computerHeading = document.querySelector(".computer h2");
     if (computerHeading) computerHeading.textContent = computer.name;
 
-    const game: Game = new Game(player, computer, mainDeck);
+    const game: WarGame = new Game(player, computer, mainDeck);
 
     // Shuffle deck
     mainDeck.shuffle();
 
     // Deal half the cards to each player
     game.deal();
+
+    // Initialize card total displays
+    updateCardTotalDisplay();
 
     console.log(player.deck);
     console.log(computer.deck);
@@ -74,10 +79,10 @@ function fillMainDeck(): WarCard[] {
                 cardName = cardValue.toString();
         }
 
-        const club = new Card("clubs", cardValue, cardName);
-        const diamond = new Card("diamonds", cardValue, cardName);
-        const heart = new Card("hearts", cardValue, cardName);
-        const spade = new Card("spades", cardValue, cardName);
+        const club: WarCard = new Card("clubs", cardValue, cardName);
+        const diamond: WarCard = new Card("diamonds", cardValue, cardName);
+        const heart: WarCard = new Card("hearts", cardValue, cardName);
+        const spade: WarCard = new Card("spades", cardValue, cardName);
         deck.push(club, diamond, heart, spade);
 
     }
@@ -85,9 +90,53 @@ function fillMainDeck(): WarCard[] {
     return deck;
 }
 
-// TODO: Create function that plays a single round of the game
+function playRound(warWinnings: WarCard[]): void {
+    // Grab instance of game so we can access player decks
+    const game: WarGame = Game.getInstance();
+    
+    const playerCard: WarCard = game.player.deck.drawCard();
+    const computerCard: WarCard = game.computer.deck.drawCard();
+    console.log(playerCard);
+    console.log(computerCard);
+    // let winner: string;
 
-// TODO: Create function to update card total display
+    if (playerCard.value > computerCard.value) {
+        // Player wins
+        // winner = game.player.name;
+        game.player.deck.addCards(playerCard, computerCard, ...warWinnings);
+    } else if (playerCard.value < computerCard.value) {
+        // Computer wins
+        // winner = game.computer.name;
+        game.computer.deck.addCards(computerCard, playerCard, ...warWinnings);
+    } else {
+        // War
+        const winnings = [
+            playerCard,
+            game.player.deck.drawCard(),
+            game.player.deck.drawCard(),
+            game.player.deck.drawCard(),
+            computerCard,
+            game.computer.deck.drawCard(),
+            game.computer.deck.drawCard(),
+            game.computer.deck.drawCard(),
+        ];
+        // TODO: should I shuffle these cards before they return to the winner's deck?
+        console.log("cards to be won");
+        console.log(winnings);
+        playRound(winnings);
+    }
+
+    updateCardTotalDisplay();
+}
+
+function updateCardTotalDisplay(): void {
+    const game: WarGame = Game.getInstance();
+    const playerTotal = document.querySelector(".player .total");
+    const computerTotal = document.querySelector(".computer .total");
+
+    if (playerTotal) playerTotal.textContent = game.player.deck.total.toString();
+    if (computerTotal) computerTotal.textContent = game.computer.deck.total.toString();
+}
 
 // TODO: Create function to update played card displays for player and computer
 

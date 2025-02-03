@@ -2,14 +2,25 @@ import { WarGame, WarPlayer, WarDeck, WarCard } from "./types.js";
 
 // Classes
 export class Game implements WarGame {
+    static _instance: WarGame;
     player: WarPlayer;
     computer: WarPlayer;
     mainDeck: WarDeck;
 
     constructor(player: WarPlayer, computer: WarPlayer, mainDeck: WarDeck) {
+        if (Game._instance) {
+            return Game._instance;
+        }
+
         this.player = player;
         this.computer = computer;
         this.mainDeck = mainDeck;
+
+        Game._instance = this;
+    }
+
+    static getInstance(): Game {
+        return Game._instance;
     }
 
     deal(): void {
@@ -70,7 +81,13 @@ export class Deck implements WarDeck {
         }
     }
 
-    // Pull card from top of deck
+    // Draw card from top of deck
+    drawCard(): WarCard {
+            // Assert that a card will be returned by shift
+            const card: WarCard = this.cards.shift()!;
+            this.total = this.cards.length;
+            return card;
+    }
 
     // Add won cards to bottom of deck
     addCards(...cards: WarCard[]): void {
