@@ -1,6 +1,6 @@
 import { Game, Player, Deck, Card } from "./classes.js";
 // import Game from "./classes.js";
-import { WarGame, WarPlayer, WarDeck, WarCard } from "./types.js";
+import { WarPlayer, WarDeck, WarCard } from "./types.js";
 
 // Event Listener
 document.querySelector(".start-game")?.addEventListener("click", () => {
@@ -18,11 +18,15 @@ document.querySelector(".start-game")?.addEventListener("click", () => {
 });
 
 document.querySelector(".draw")?.addEventListener("click", () => {
-    playRound([]);
+    const game: Game = Game.getInstance();
+    const winnings = [...game.getWinnings()];
+    game.playRound(winnings);
 });
 
 // Game
 function startGame(playerName: string): void {
+    const game: Game = new Game();
+
     // Function to add cards to main deck
     const mainDeck: WarDeck = new Deck(fillMainDeck());
     const playerDeck: WarDeck = new Deck([]);
@@ -30,12 +34,14 @@ function startGame(playerName: string): void {
     const player: WarPlayer = new Player(playerName, playerDeck);
     const computer: WarPlayer = new Player("Computer", computerDeck);
 
+    game.setPlayer(player);
+    game.setComputer(computer);
+    game.setMainDeck(mainDeck);
+
     const playerHeading = document.querySelector(".player h2");
     if (playerHeading) playerHeading.textContent = player.name;
     const computerHeading = document.querySelector(".computer h2");
     if (computerHeading) computerHeading.textContent = computer.name;
-
-    const game: WarGame = new Game(player, computer, mainDeck);
 
     // Shuffle deck
     mainDeck.shuffle();
@@ -44,7 +50,7 @@ function startGame(playerName: string): void {
     game.deal();
 
     // Initialize card total displays
-    updateCardTotalDisplay();
+    game.updateCardTotalDisplay();
 
     console.log(player.deck);
     console.log(computer.deck);
@@ -64,16 +70,16 @@ function fillMainDeck(): WarCard[] {
 
         switch(cardValue) {
             case 11:
-                cardName = "J";
+                cardName = "Jack";
                 break;
             case 12:
-                cardName = "Q";
+                cardName = "Queen";
                 break;
             case 13:
-                cardName = "K";
+                cardName = "King";
                 break;
             case 14:
-                cardName = "A";
+                cardName = "Ace";
                 break;
             default:
                 cardName = cardValue.toString();
@@ -88,54 +94,6 @@ function fillMainDeck(): WarCard[] {
     }
 
     return deck;
-}
-
-function playRound(warWinnings: WarCard[]): void {
-    // Grab instance of game so we can access player decks
-    const game: WarGame = Game.getInstance();
-    
-    const playerCard: WarCard = game.player.deck.drawCard();
-    const computerCard: WarCard = game.computer.deck.drawCard();
-    console.log(playerCard);
-    console.log(computerCard);
-    // let winner: string;
-
-    if (playerCard.value > computerCard.value) {
-        // Player wins
-        // winner = game.player.name;
-        game.player.deck.addCards(playerCard, computerCard, ...warWinnings);
-    } else if (playerCard.value < computerCard.value) {
-        // Computer wins
-        // winner = game.computer.name;
-        game.computer.deck.addCards(computerCard, playerCard, ...warWinnings);
-    } else {
-        // War
-        const winnings = [
-            playerCard,
-            game.player.deck.drawCard(),
-            game.player.deck.drawCard(),
-            game.player.deck.drawCard(),
-            computerCard,
-            game.computer.deck.drawCard(),
-            game.computer.deck.drawCard(),
-            game.computer.deck.drawCard(),
-        ];
-        // TODO: should I shuffle these cards before they return to the winner's deck?
-        console.log("cards to be won");
-        console.log(winnings);
-        playRound(winnings);
-    }
-
-    updateCardTotalDisplay();
-}
-
-function updateCardTotalDisplay(): void {
-    const game: WarGame = Game.getInstance();
-    const playerTotal = document.querySelector(".player .total");
-    const computerTotal = document.querySelector(".computer .total");
-
-    if (playerTotal) playerTotal.textContent = game.player.deck.total.toString();
-    if (computerTotal) computerTotal.textContent = game.computer.deck.total.toString();
 }
 
 // TODO: Create function to update played card displays for player and computer

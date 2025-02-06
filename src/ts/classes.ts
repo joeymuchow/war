@@ -1,21 +1,17 @@
-import { WarGame, WarPlayer, WarDeck, WarCard } from "./types.js";
+import { WarPlayer, WarDeck, WarCard } from "./types.js";
 
 // Classes
-export class Game implements WarGame {
-    static _instance: WarGame;
-    player: WarPlayer;
-    computer: WarPlayer;
-    mainDeck: WarDeck;
+export class Game {
+    static _instance: Game;
+    private _player: WarPlayer;
+    private _computer: WarPlayer;
+    private _mainDeck: WarDeck;
+    private _winnings: WarCard[] = [];
 
-    constructor(player: WarPlayer, computer: WarPlayer, mainDeck: WarDeck) {
+    constructor() {
         if (Game._instance) {
             return Game._instance;
         }
-
-        this.player = player;
-        this.computer = computer;
-        this.mainDeck = mainDeck;
-
         Game._instance = this;
     }
 
@@ -23,14 +19,107 @@ export class Game implements WarGame {
         return Game._instance;
     }
 
+    getPlayer(): WarPlayer {
+        return this._player;
+    }
+
+    setPlayer(player: WarPlayer) {
+        this._player = player;
+    }
+
+    getComputer(): WarPlayer {
+        return this._computer;
+    }
+
+    setComputer(computer: WarPlayer) {
+        this._computer = computer;
+    }
+
+    getMainDeck(): WarDeck {
+        return this._mainDeck;
+    }
+
+    setMainDeck(deck: WarDeck) {
+        this._mainDeck = deck;
+    }
+
+    getWinnings(): WarCard[] {
+        return this._winnings;
+    }
+
+    setWinnings(winnings: WarCard[]) {
+        this._winnings = winnings;
+    }
+
     deal(): void {
-        for (let i = 0; i < this.mainDeck.total; i++) {
+        for (let i = 0; i < this._mainDeck.total; i++) {
             if (i % 2 === 0) {
-                this.player.deck.addCards(this.mainDeck.cards[i]);
+                this._player.deck.addCards(this._mainDeck.cards[i]);
             } else {
-                this.computer.deck.addCards(this.mainDeck.cards[i]);
+                this._computer.deck.addCards(this._mainDeck.cards[i]);
             }
         }
+    }
+
+    playRound(warWinnings: WarCard[]): void {
+        // Grab instance of game so we can access player decks
+        // const game: Game = Game.getInstance();
+        
+        const playerCard: WarCard = this._player.deck.drawCard();
+        const computerCard: WarCard = this._computer.deck.drawCard();
+        console.log(playerCard);
+        console.log(computerCard);
+        // let winner: string;
+    
+        if (playerCard.value > computerCard.value) {
+            // Player wins
+            // winner = game.player.name;
+            this._player.deck.addCards(playerCard, computerCard, ...warWinnings);
+            // Clear winnings when someone wins a hand
+            this.setWinnings([]);
+        } else if (playerCard.value < computerCard.value) {
+            // Computer wins
+            // winner = game.computer.name;
+            this._computer.deck.addCards(computerCard, playerCard, ...warWinnings);
+            // Clear winnings when someone wins a hand
+            this.setWinnings([]);
+        } else {
+            // War
+            const newWinnings = [
+                playerCard,
+                this._player.deck.drawCard(),
+                this._player.deck.drawCard(),
+                this._player.deck.drawCard(),
+                computerCard,
+                this._computer.deck.drawCard(),
+                this._computer.deck.drawCard(),
+                this._computer.deck.drawCard(),
+            ];
+            console.log("cards to be won");
+            console.log(newWinnings);
+            // Add new war winnings to previous ones in the case of multiple wars in a row
+            this.setWinnings([...warWinnings, ...newWinnings]);
+        }
+    
+        this.updatePlayedCardDisplay(playerCard, computerCard);
+        this.updateCardTotalDisplay();
+    }
+
+    updatePlayedCardDisplay(playerCard: WarCard, computerCard: WarCard): void {
+        const playerCardDisplay = document.querySelector(".player .card");
+        const computerCardDisplay = document.querySelector(".computer .card");
+    
+        if (playerCardDisplay) playerCardDisplay.textContent = `${playerCard.name} of ${playerCard.suit[0].toUpperCase() + playerCard.suit.slice(1)}`;
+        if (computerCardDisplay) computerCardDisplay.textContent = `${computerCard.name} of ${computerCard.suit[0].toUpperCase() + computerCard.suit.slice(1)}`;
+    }
+
+    updateCardTotalDisplay(): void {
+        const game: Game = Game.getInstance();
+        const playerTotal = document.querySelector(".player .total");
+        const computerTotal = document.querySelector(".computer .total");
+    
+        if (playerTotal) playerTotal.textContent = game._player.deck.total.toString();
+        if (computerTotal) computerTotal.textContent = game._computer.deck.total.toString();
     }
 }
 
@@ -47,12 +136,12 @@ export class Player implements WarPlayer {
 export class Card implements WarCard {
     suit: "clubs" | "diamonds" | "hearts" | "spades";
     value: 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14;
-    name: "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "A";
+    name: "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "Jack" | "Queen" | "King" | "Ace";
 
     constructor(
         suit: "clubs" | "diamonds" | "hearts" | "spades",
         value: 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14,
-        name: "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "A"
+        name: "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "Jack" | "Queen" | "King" | "Ace"
     ) {
         this.suit = suit;
         this.value = value;
