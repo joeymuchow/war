@@ -1,6 +1,6 @@
 import { assert, test, beforeEach, describe } from "vitest";
-import { Game, Deck, Player, Card } from "../src/ts/classes";
-import { WarCard, WarDeck, WarPlayer } from "../src/ts/types";
+import { Game, Deck, Player, Card } from "../src/classes";
+import { WarCard, WarDeck, WarPlayer } from "../src/types";
 
 /**
  * @jest-environment jsdom
