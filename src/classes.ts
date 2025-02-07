@@ -35,10 +35,6 @@ export class Game {
         this._computer = computer;
     }
 
-    getMainDeck(): WarDeck {
-        return this._mainDeck;
-    }
-
     setMainDeck(deck: WarDeck) {
         this._mainDeck = deck;
     }
