@@ -17,3 +17,8 @@ export type WarDeck = {
     drawCard(): WarCard;
     addCards: (...cards) => void;
 }
+
+export type WarWinner = {
+    isWinner: boolean;
+    name: string;
+}

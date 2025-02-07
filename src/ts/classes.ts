@@ -1,4 +1,4 @@
-import { WarPlayer, WarDeck, WarCard } from "./types.js";
+import { WarPlayer, WarDeck, WarCard, WarWinner } from "./types.js";
 
 // Classes
 export class Game {
@@ -61,48 +61,52 @@ export class Game {
         }
     }
 
-    playRound(warWinnings: WarCard[]): void {
-        // Grab instance of game so we can access player decks
-        // const game: Game = Game.getInstance();
-        
+    playRound(warWinnings: WarCard[]): void {      
         const playerCard: WarCard = this._player.deck.drawCard();
         const computerCard: WarCard = this._computer.deck.drawCard();
-        console.log(playerCard);
-        console.log(computerCard);
-        // let winner: string;
+        let roundResult: string;
+        let gameWinner: WarWinner = { isWinner: false, name: ""};
     
         if (playerCard.value > computerCard.value) {
             // Player wins
-            // winner = game.player.name;
+            roundResult = `${this.getPlayer().name} wins the round!`;
             this._player.deck.addCards(playerCard, computerCard, ...warWinnings);
             // Clear winnings when someone wins a hand
             this.setWinnings([]);
+            gameWinner = this.checkForWinner(false);
         } else if (playerCard.value < computerCard.value) {
             // Computer wins
-            // winner = game.computer.name;
+            roundResult = `${this.getComputer().name} wins the round!`;
             this._computer.deck.addCards(computerCard, playerCard, ...warWinnings);
             // Clear winnings when someone wins a hand
             this.setWinnings([]);
+            gameWinner = this.checkForWinner(false);
         } else {
             // War
-            const newWinnings = [
-                playerCard,
-                this._player.deck.drawCard(),
-                this._player.deck.drawCard(),
-                this._player.deck.drawCard(),
-                computerCard,
-                this._computer.deck.drawCard(),
-                this._computer.deck.drawCard(),
-                this._computer.deck.drawCard(),
-            ];
-            console.log("cards to be won");
-            console.log(newWinnings);
-            // Add new war winnings to previous ones in the case of multiple wars in a row
-            this.setWinnings([...warWinnings, ...newWinnings]);
+            gameWinner = this.checkForWinner(true);
+            if (!gameWinner.isWinner) {
+                roundResult = "War!";
+                const newWinnings = [
+                    playerCard,
+                    this._player.deck.drawCard(),
+                    this._player.deck.drawCard(),
+                    this._player.deck.drawCard(),
+                    computerCard,
+                    this._computer.deck.drawCard(),
+                    this._computer.deck.drawCard(),
+                    this._computer.deck.drawCard(),
+                ];
+                // Add new war winnings to previous ones in the case of multiple wars in a row
+                this.setWinnings([...warWinnings, ...newWinnings]);
+            } else {
+                roundResult = "";
+            }
         }
     
         this.updatePlayedCardDisplay(playerCard, computerCard);
         this.updateCardTotalDisplay();
+        this.updateRoundResultDisplay(roundResult);
+        this.updateGameWinnerDisplay(gameWinner);
     }
 
     updatePlayedCardDisplay(playerCard: WarCard, computerCard: WarCard): void {
@@ -120,6 +124,43 @@ export class Game {
     
         if (playerTotal) playerTotal.textContent = game._player.deck.total.toString();
         if (computerTotal) computerTotal.textContent = game._computer.deck.total.toString();
+    }
+
+    updateRoundResultDisplay(roundResultMessage: string): void {
+        const roundResult = document.querySelector(".round-result");
+        console.log(roundResult);
+        if (roundResult) roundResult.textContent = roundResultMessage;
+    }
+
+    updateGameWinnerDisplay(winner: WarWinner) {
+        const winnerDisplay = document.querySelector(".game-winner");
+
+        if (winnerDisplay) winnerDisplay.textContent = winner.isWinner ? `${winner.name} wins!!!` : "";
+    }
+
+    checkForWinner(inAWar: boolean): WarWinner {
+        const game: Game = Game.getInstance();
+        const winner: WarWinner = { isWinner: false, name: "" };
+
+        if (game.getPlayer().deck.total === 0) {
+            winner.name = game.getComputer().name;
+            winner.isWinner = true;
+        } else if (game.getComputer().deck.total === 0) {
+            winner.name = game.getPlayer().name;
+            winner.isWinner = true;
+        } else if (inAWar) {
+            // If a player's deck is less than 4 cards when a war happens, they lose
+            // because they do not have enough cards to participate
+            if (game.getPlayer().deck.total < 4) {
+                winner.name = game.getComputer().name;
+                winner.isWinner = true;
+            } else if (game.getComputer().deck.total < 4) {
+                winner.name = game.getPlayer().name;
+                winner.isWinner = true;
+            }
+        }
+
+        return winner;
     }
 }
 

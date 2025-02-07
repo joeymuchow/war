@@ -1,5 +1,4 @@
 import { Game, Player, Deck, Card } from "./classes.js";
-// import Game from "./classes.js";
 import { WarPlayer, WarDeck, WarCard } from "./types.js";
 
 // Event Listener
@@ -95,7 +94,5 @@ function fillMainDeck(): WarCard[] {
 
     return deck;
 }
-
-// TODO: Create function to update played card displays for player and computer
 
 // TODO: Create function to add last played round result to the history log

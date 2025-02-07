@@ -12,7 +12,7 @@ describe("Game class tests", () => {
         const playerDeck: WarDeck = new Deck([]);
         const computerDeck: WarDeck = new Deck([]);
         const player: WarPlayer = new Player("test", playerDeck);
-        const computer: WarPlayer = new Player("computer", computerDeck);
+        const computer: WarPlayer = new Player("Computer", computerDeck);
         game.setPlayer(player);
         game.setComputer(computer);
     });
@@ -84,6 +84,92 @@ describe("Game class tests", () => {
             assert.strictEqual(game.getWinnings().length, 8, "War winnings should have 8 cards inside it");
             assert.strictEqual(game.getPlayer().deck.total, 1, "Player should only have 1 card left in deck");
             assert.strictEqual(game.getComputer().deck.total, 1, "Computer should only have 1 card left in deck");
+        });
+    });
+
+    describe("Check for winner tests", () => {
+        test("Player runs out of cards", () => {
+            const game = Game.getInstance();
+            const mainDeck = new Deck([
+                { value: 2, name: "2", suit: "clubs" },
+                { value: 3, name: "3", suit: "clubs" },
+                { value: 4, name: "4", suit: "clubs" },
+                { value: 5, name: "5", suit: "clubs" },
+                { value: 6, name: "6", suit: "clubs" },
+                { value: 7, name: "7", suit: "clubs" },
+            ]);
+            game.setMainDeck(mainDeck);
+            game.deal();
+            game.playRound(game.getWinnings());
+            game.playRound(game.getWinnings());
+            game.playRound(game.getWinnings());
+            const winner = game.checkForWinner(false);
+            assert.strictEqual(winner.name, "Computer", "Computer should have won");
+        });
+
+        test("Computer runs out of cards", () => {
+            const game = Game.getInstance();
+            const mainDeck = new Deck([
+                { value: 4, name: "4", suit: "clubs" },
+                { value: 3, name: "3", suit: "clubs" },
+                { value: 6, name: "6", suit: "clubs" },
+                { value: 5, name: "5", suit: "clubs" },
+                { value: 8, name: "8", suit: "clubs" },
+                { value: 7, name: "7", suit: "clubs" },
+            ]);
+            game.setMainDeck(mainDeck);
+            game.deal();
+            game.playRound(game.getWinnings());
+            game.playRound(game.getWinnings());
+            game.playRound(game.getWinnings());
+            const winner = game.checkForWinner(false);
+            assert.strictEqual(winner.name, "test", "test should have won");
+        });
+
+        test("Player runs out of cards during war", () => {
+            const game = Game.getInstance();
+            const mainDeck = new Deck([
+                { value: 2, name: "2", suit: "clubs" },
+                { value: 3, name: "3", suit: "clubs" },
+                { value: 4, name: "4", suit: "clubs" },
+                { value: 5, name: "5", suit: "clubs" },
+                { value: 7, name: "7", suit: "clubs" },
+                { value: 7, name: "7", suit: "hearts" },
+                { value: 7, name: "8", suit: "clubs" },
+                { value: 7, name: "9", suit: "clubs" },
+                { value: 7, name: "10", suit: "clubs" },
+                { value: 7, name: "7", suit: "spades" },
+            ]);
+            game.setMainDeck(mainDeck);
+            game.deal();
+            game.playRound(game.getWinnings());
+            game.playRound(game.getWinnings());
+            game.playRound(game.getWinnings());
+            const winner = game.checkForWinner(true);
+            assert.strictEqual(winner.name, "Computer", "Computer should have won");
+        });
+
+        test("Computer runs out of cards during war", () => {
+            const game = Game.getInstance();
+            const mainDeck = new Deck([
+                { value: 4, name: "4", suit: "clubs" },
+                { value: 3, name: "3", suit: "clubs" },
+                { value: 6, name: "6", suit: "clubs" },
+                { value: 5, name: "5", suit: "clubs" },
+                { value: 7, name: "7", suit: "clubs" },
+                { value: 7, name: "7", suit: "hearts" },
+                { value: 7, name: "8", suit: "clubs" },
+                { value: 7, name: "9", suit: "clubs" },
+                { value: 7, name: "10", suit: "clubs" },
+                { value: 7, name: "7", suit: "spades" },
+            ]);
+            game.setMainDeck(mainDeck);
+            game.deal();
+            game.playRound(game.getWinnings());
+            game.playRound(game.getWinnings());
+            game.playRound(game.getWinnings());
+            const winner = game.checkForWinner(true);
+            assert.strictEqual(winner.name, "test", "test should have won");
         });
     });
 });
