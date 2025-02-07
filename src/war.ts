@@ -10,10 +10,13 @@ document.querySelector(".start-game")?.addEventListener("click", () => {
         return;
     }
     startGame(playerName);
-    const startBtn = document.querySelector(".start-game");
-    if (startBtn) startBtn.classList.toggle("hide");
-    const drawBtn = document.querySelector(".draw");
-    if (drawBtn) drawBtn.classList.toggle("hide");
+    const winnerDisplay = document.querySelector(".game-winner");
+    if (winnerDisplay) winnerDisplay.textContent = "";
+    const roundResult = document.querySelector(".round-result");
+    if (roundResult) roundResult.textContent = "";
+
+    document.querySelector(".start-game")?.classList.toggle("hide");
+    document.querySelector(".draw")?.classList.toggle("hide");
 });
 
 document.querySelector(".draw")?.addEventListener("click", () => {
@@ -50,10 +53,6 @@ function startGame(playerName: string): void {
 
     // Initialize card total displays
     game.updateCardTotalDisplay();
-
-    console.log(player.deck);
-    console.log(computer.deck);
-    console.log(mainDeck);
 }
 
 function getPlayerName(): string {

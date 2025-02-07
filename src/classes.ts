@@ -128,7 +128,6 @@ export class Game {
 
     updateRoundResultDisplay(roundResultMessage: string): void {
         const roundResult = document.querySelector(".round-result");
-        console.log(roundResult);
         if (roundResult) roundResult.textContent = roundResultMessage;
     }
 
@@ -136,6 +135,28 @@ export class Game {
         const winnerDisplay = document.querySelector(".game-winner");
 
         if (winnerDisplay) winnerDisplay.textContent = winner.isWinner ? `${winner.name} wins!!!` : "";
+
+        if (winner.isWinner) {
+            this.resetGameDisplay();
+        }
+    }
+
+    resetGameDisplay() {
+        document.querySelector(".start-game")?.classList.toggle("hide");
+
+        document.querySelector(".draw")?.classList.toggle("hide");
+
+        const playerTotal = document.querySelector(".player .total");
+        if (playerTotal) playerTotal.textContent = "";
+
+        const computerTotal = document.querySelector(".computer .total");
+        if (computerTotal) computerTotal.textContent = "";
+
+        const playerCardDisplay = document.querySelector(".player .card");
+        if (playerCardDisplay) playerCardDisplay.textContent = "";
+
+        const computerCardDisplay = document.querySelector(".computer .card");
+        if (computerCardDisplay) computerCardDisplay.textContent = "";
     }
 
     checkForWinner(inAWar: boolean): WarWinner {
