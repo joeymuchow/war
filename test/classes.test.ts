@@ -1,4 +1,4 @@
-import { assert, test, beforeEach, describe } from "vitest";
+import { assert, test, beforeEach, describe, expect } from "vitest";
 import { Game, Deck, Player, Card } from "../src/classes";
 import { WarCard, WarDeck, WarPlayer } from "../src/types";
 
@@ -198,5 +198,53 @@ describe("Deck class tests", () => {
         assert.strictEqual(drawnCard.name, "2", "Drawn card's name is '2'");
         assert.strictEqual(drawnCard.suit, "clubs", "Drawn card's suit is 'clubs'");
         assert.strictEqual(deck.total, 3, "Deck total should have dropped from 4 to 3");
+    });
+
+    test("Deck shuffles cards", () => {
+        const deck: WarDeck = new Deck([]);
+        const originalDeck: WarCard[] = [
+            { value: 2, name: "2", suit: "clubs" },
+            { value: 3, name: "3", suit: "clubs" },
+            { value: 4, name: "4", suit: "clubs" },
+            { value: 5, name: "5", suit: "clubs" },
+        ];
+        deck.addCards(...originalDeck);
+        deck.shuffle();
+        assert.notEqual(deck.cards, originalDeck, "The shuffled deck should be different from the originalDeck");
+        assert.strictEqual(deck.cards.length, originalDeck.length, "Shuffling should not change the number of cards in the deck");
+    });
+
+    test("Deck has all the same cards after shuffling", () => {
+        const deck: WarDeck = new Deck([]);
+        const originalDeck: WarCard[] = [
+            { value: 2, name: "2", suit: "clubs" },
+            { value: 3, name: "3", suit: "clubs" },
+            { value: 4, name: "4", suit: "clubs" },
+            { value: 5, name: "5", suit: "clubs" },
+        ];
+        deck.addCards(...originalDeck);
+        deck.shuffle();
+        console.log("----------");
+        console.log(deck.cards);
+        console.log("----------");
+        console.log(originalDeck);
+        console.log("----------");
+        expect(deck.cards.map(a => a.value).sort()).toEqual(originalDeck.map(a => a.value).sort());
+    });
+
+    test("Shuffle method can handle an empty array", () => {
+        const deck: WarDeck = new Deck([]);
+        const emptyArray: WarCard[] = [];
+        deck.addCards(...emptyArray);
+        deck.shuffle();
+        expect(deck.cards).toEqual(emptyArray);
+    });
+
+    test("Shuffle method can shuffle 1 card", () => {
+        const deck: WarDeck = new Deck([]);
+        const oneCardArray: WarCard[] = [{ value: 2, name: "2", suit: "clubs" }];
+        deck.addCards(...oneCardArray);
+        deck.shuffle();
+        expect(deck.cards).toEqual(oneCardArray);
     });
 });
