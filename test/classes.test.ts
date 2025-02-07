@@ -1,5 +1,6 @@
 import { assert, test, beforeEach, describe } from "vitest";
-import { Game, Deck, Player } from "../src/ts/classes";
+import { Game, Deck, Player, Card } from "../src/ts/classes";
+import { WarCard, WarDeck, WarPlayer } from "../src/ts/types";
 
 /**
  * @jest-environment jsdom
@@ -8,10 +9,10 @@ describe("Game class tests", () => {
     beforeEach(() => {
         const game = new Game();
         // Main deck is set in each test so we can easily set the cards to be drawn
-        const playerDeck = new Deck([]);
-        const computerDeck = new Deck([]);
-        const player = new Player("test", playerDeck);
-        const computer = new Player("computer", computerDeck);
+        const playerDeck: WarDeck = new Deck([]);
+        const computerDeck: WarDeck = new Deck([]);
+        const player: WarPlayer = new Player("test", playerDeck);
+        const computer: WarPlayer = new Player("computer", computerDeck);
         game.setPlayer(player);
         game.setComputer(computer);
     });
@@ -35,7 +36,7 @@ describe("Game class tests", () => {
     describe("playRound tests", () => {
         test("Computer wins round and gets Player's card", () => {
             const game = Game.getInstance();
-            const mainDeck = new Deck([
+            const mainDeck: WarDeck = new Deck([
                 { value: 2, name: "2", suit: "clubs" },
                 { value: 3, name: "3", suit: "clubs" },
                 { value: 4, name: "4", suit: "clubs" },
@@ -43,15 +44,14 @@ describe("Game class tests", () => {
             ]);
             game.setMainDeck(mainDeck);
             game.deal();
-            const winnings = game.getWinnings();
-            game.playRound(winnings);
+            game.playRound(game.getWinnings());
             assert.strictEqual(game.getComputer().deck.total, 3, "Computer should have won Player's card");
             assert.strictEqual(game.getPlayer().deck.total, 1, "Player should have lost a card");
         });
 
         test("Player wins round and gets Computer's card", () => {
             const game = Game.getInstance();
-            const mainDeck = new Deck([
+            const mainDeck: WarDeck = new Deck([
                 { value: 5, name: "5", suit: "clubs" },
                 { value: 3, name: "3", suit: "clubs" },
                 { value: 4, name: "4", suit: "clubs" },
@@ -66,7 +66,7 @@ describe("Game class tests", () => {
 
         test("War happens when Player and Computer tie", () => {
             const game = Game.getInstance();
-            const mainDeck = new Deck([
+            const mainDeck: WarDeck = new Deck([
                 { value: 2, name: "2", suit: "clubs" },
                 { value: 2, name: "2", suit: "spades" },
                 { value: 4, name: "4", suit: "hearts" },
@@ -85,5 +85,32 @@ describe("Game class tests", () => {
             assert.strictEqual(game.getPlayer().deck.total, 1, "Player should only have 1 card left in deck");
             assert.strictEqual(game.getComputer().deck.total, 1, "Computer should only have 1 card left in deck");
         });
+    });
+});
+
+describe("Deck class tests", () => {
+    test("Cards can be added to deck", () => {
+        const deck: WarDeck = new Deck([]);
+        const card: WarCard = new Card("clubs", 2, "2");
+        deck.addCards(card);
+        assert.strictEqual(deck.total, 1, "Deck should have 1 card now");
+        assert.strictEqual(deck.cards[0].value, 2, "Card from deck's value should be 2");
+        assert.strictEqual(deck.cards[0].name, "2", "Card from deck's name should be '2'");
+        assert.strictEqual(deck.cards[0].suit, "clubs", "Card from deck's suit should be clubs");
+    });
+
+    test("Cards can be drawn from deck", () => {
+        const deck: WarDeck = new Deck([]);
+        deck.addCards(
+            { value: 2, name: "2", suit: "clubs" },
+            { value: 3, name: "3", suit: "clubs" },
+            { value: 4, name: "4", suit: "clubs" },
+            { value: 5, name: "5", suit: "clubs" },
+        );
+        const drawnCard: WarCard = deck.drawCard();
+        assert.strictEqual(drawnCard.value, 2, "Drawn card's value is 2");
+        assert.strictEqual(drawnCard.name, "2", "Drawn card's name is '2'");
+        assert.strictEqual(drawnCard.suit, "clubs", "Drawn card's suit is 'clubs'");
+        assert.strictEqual(deck.total, 3, "Deck total should have dropped from 4 to 3");
     });
 });

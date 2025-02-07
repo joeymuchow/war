@@ -172,10 +172,10 @@ export class Deck implements WarDeck {
 
     // Draw card from top of deck
     drawCard(): WarCard {
-            // Assert that a card will be returned by shift
-            const card: WarCard = this.cards.shift()!;
-            this.total = this.cards.length;
-            return card;
+        // Assert that a card will be returned by shift
+        const card: WarCard = this.cards.shift()!;
+        this.total = this.cards.length;
+        return card;
     }
 
     // Add won cards to bottom of deck
